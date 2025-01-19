@@ -12,7 +12,7 @@ morgan.token("status", (req, res) => {
   return chalk.green(statusCode);
 });
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(
     winston.format.colorize(),
@@ -21,16 +21,16 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: "server/logs/app.log",
+      filename: "logs/app.log",
       level: "info",
     }),
   ],
 });
 
-const morganLogger = morgan(":method :url :status :response-time ms", {
-  stream: {
-    write: (message) => logger.info(message.trim()),
-  },
-});
-
-export { logger, morganLogger };
+if (process.env.NODE_ENV === "development") {
+  morganLogger = morgan(":method :url :status :response-time ms", {
+    stream: {
+      write: (message) => logger.info(message.trim()),
+    },
+  });
+}
