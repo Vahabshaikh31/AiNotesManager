@@ -1,7 +1,7 @@
 import { sendMail } from "../services/emailService.js";
-import { generateOtp } from "../utils/otpUtils.js";
-import { generateOtpEmailMessage } from "../utils/otpEmailTemplate.js"; // Import the template function
-import { logger } from "../utils/logger.js";
+import { generateOtp } from "../services/utils/otpUtils.js";
+import { generateOtpEmailMessage } from "../services/utils/otpEmailTemplate.js"; // Import the template function
+import { logger } from "../services/utils/logger.js";
 
 // Function to send OTP
 export const sendOtp = async (req, res) => {
@@ -21,6 +21,8 @@ export const sendOtp = async (req, res) => {
     logger.info("OTP sent to the user's email");
     res.status(200).send({ message: "OTP sent successfully", otp });
   } catch (error) {
+    logger.info("OTP sent to the user's email", error);
+
     res.status(500).send("Error sending OTP");
   }
 };

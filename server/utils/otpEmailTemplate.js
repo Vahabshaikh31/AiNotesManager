@@ -1,5 +1,3 @@
-// utils/otpEmailTemplate.js
-
 export const generateOtpEmailMessage = (otp) => {
   return `
     <html>
