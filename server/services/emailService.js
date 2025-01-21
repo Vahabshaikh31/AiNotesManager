@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { emailConfig } from "../config/emailConfig.js";
-import { logger } from "./utils/logger.js";
+import { logger } from "../utils/logger.js";
 dotenv.config();
 const transport = nodemailer.createTransport(emailConfig);
 

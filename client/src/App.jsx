@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import { useState } from "react";
 import RefrshHandler from "./components/RefreshHandler";
 import NotFound from "./pages/NotFound";
+import { AppBar } from "@mui/material";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -20,6 +21,7 @@ function App() {
   return (
     <BrowserRouter>
       <RefrshHandler setIsAuthenticated={setIsAuthenticated} />
+
       <Routes>
         <Route path="/login" element={<GoogleWrapper />} />
         <Route path="/" element={<Navigate to="/login" />} />

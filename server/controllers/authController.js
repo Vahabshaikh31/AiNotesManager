@@ -1,8 +1,8 @@
 import axios from "axios";
 import jwt from "jsonwebtoken";
-import { oauth2Client } from "../services/utils/googleClient.js";
+import { oauth2Client } from "../utils/googleClient.js";
 import User from "../models/userModel.js";
-import { logger } from "../services/utils/logger.js";
+import { logger } from "../utils/logger.js";
 
 export const googleAuth = async (req, res, next) => {
   const code = req.query.code;

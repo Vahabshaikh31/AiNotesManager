@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { googleAuth } from "../api/apiService"; // Ensure this matches the correct API endpoint
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const GoogleLogin = (props) => {
   const [user, setUser] = useState(null);
@@ -16,7 +17,10 @@ const GoogleLogin = (props) => {
         const { email, name, image } = result.data.user;
         const token = result.data.token;
         const obj = { email, name, token, image };
-        localStorage.setItem("user-info", JSON.stringify(obj));
+
+        // Set cookie instead of using localStorage
+        Cookies.set("user-info", JSON.stringify(obj), { expires: 7 }); // Expires in 7 days
+
         setLoading(false); // Stop loading
         navigate("/dashboard"); // Redirect to dashboard
       } else {
