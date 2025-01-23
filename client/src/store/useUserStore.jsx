@@ -1,15 +1,15 @@
-import create from "zustand";
-import Cookies from "js-cookie";
+import { Navigate } from "react-router-dom";
+import { create } from "zustand";
 
 const useUserStore = create((set) => ({
-  userInfo: JSON.parse(Cookies.get("user-info") || "null"), // Initialize from cookies if present
+  userInfo: JSON.parse(localStorage.getItem("user-info") || "null"), // Initialize from cookies if present
   setUserInfo: (userData) => {
     set({ userInfo: userData });
-    Cookies.set("user-info", JSON.stringify(userData), { expires: 7 });
   },
   logout: () => {
     set({ userInfo: null });
-    Cookies.remove("user-info");
+    localStorage.removeItem("user-info");
+    Navigate("/login");
   },
 }));
 

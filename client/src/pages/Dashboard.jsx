@@ -1,38 +1,63 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ResponsiveAppBar from "../components/ResponsiveAppBar";
-import useUserStore from "../store/useUserStore";
-import Cookies from "js-cookie";
+import Logger from "../utils/logger";
+import { userAPI } from "../api/apiService";
 
 const Dashboard = () => {
-  const { userInfo, logout, setUserInfo } = useUserStore();
   const navigate = useNavigate();
+  Logger.info("Dashboard page loaded...");
 
-  useEffect(() => {
-    if (!userInfo) {
-      const data = Cookies.get("user-info");
-      if (data) {
-        const userData = JSON.parse(data);
-        setUserInfo(userData); // Set user info from cookie if it exists
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // To track errors
+
+  // Get the token from localStorage
+  const token = JSON.parse(localStorage.getItem("user-info"));
+
+  const userInfo = async () => {
+    try {
+      const response = await userAPI.get("/user-info", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setUser(response.data.user);
       } else {
-        navigate("/login");
+        setError(response.data.message);
       }
+    } catch (error) {
+      Logger.error("Error fetching user info", error);
+      setError("An error occurred while fetching user info");
+    } finally {
+      setLoading(false); // Set loading to false after the call finishes
     }
-  }, [userInfo, navigate, setUserInfo]);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
   };
 
-  if (!userInfo) return <p>Loading...</p>; // Optional: Show a loading state
+  useEffect(() => {
+    if (!token) {
+      setError("No token found, please log in again.");
+      setLoading(false);
+      navigate("/login");
+      return;
+    }
+    userInfo();
+  }, [token, navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user-info"); // Correctly remove the token
+    navigate("/login"); // Redirect to login page
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>; // Display any errors
 
   return (
     <>
-      <ResponsiveAppBar />
-      <h1>Welcome {userInfo?.name}</h1>
-      <h3>{userInfo?.email}</h3>
-      <img src={userInfo?.image} alt={userInfo?.name} />
+      <ResponsiveAppBar picture={user?.picture} />
+      <h1>Welcome {user?.name}</h1>
       <button onClick={handleLogout}>Logout</button>
     </>
   );

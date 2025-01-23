@@ -2,26 +2,23 @@ import { useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { googleAuth } from "../api/apiService"; // Ensure this matches the correct API endpoint
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import Logger from "../utils/logger";
 
-const GoogleLogin = (props) => {
-  const [user, setUser] = useState(null);
+const GoogleLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  Logger.info(`Login page loaded...`);
   const responseGoogle = async (authResult) => {
     try {
       if (authResult["code"]) {
         setLoading(true); // Start loading
         const result = await googleAuth(authResult.code);
-        const { email, name, image } = result.data.user;
+        console.log(result.data);
+
         const token = result.data.token;
-        const obj = { email, name, token, image };
-
-        // Set cookie instead of using localStorage
-        Cookies.set("user-info", JSON.stringify(obj), { expires: 7 }); // Expires in 7 days
-
-        setLoading(false); // Stop loading
+        Logger.info("Google Login successful...", token);
+        localStorage.setItem("user-info", JSON.stringify(token));
+        setLoading(false);
         navigate("/dashboard"); // Redirect to dashboard
       } else {
         console.log(authResult);
@@ -29,7 +26,7 @@ const GoogleLogin = (props) => {
       }
     } catch (e) {
       console.log("Error while Google Login...", e);
-      setLoading(false); // Stop loading on error
+      setLoading(false);
     }
   };
 

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import otpRoutes from "./routes/otpRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import connectDB from "./models/dbConnect.js";
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(
 
 app.use("/api/otp", otpRoutes);
 app.use("/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 app.use("*", (req, res) => {
   res.status(404).json({ error: "Not found" });

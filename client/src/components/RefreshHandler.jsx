@@ -1,24 +1,32 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import Logger from "../utils/logger";
 
-function RefrshHandler({ setIsAuthenticated }) {
+function RefreshHandler({ setIsAuthenticated }) {
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const data = Cookies.get("user-info");
-    const token = data ? JSON.parse(data)?.token : null;
+    try {
+      const token = localStorage.getItem("user-info");
 
-    if (token) {
-      setIsAuthenticated(true);
-      if (location.pathname === "/" || location.pathname === "/login") {
-        navigate("/dashboard", { replace: false });
+      Logger.info("Refresh handler data", token);
+
+      if (token) {
+        setIsAuthenticated(true);
+        if (location.pathname === "/" || location.pathname === "/login") {
+          navigate("/dashboard", { replace: false });
+        }
+      } else {
+        setIsAuthenticated(false); // Explicitly set authentication to false if no token
       }
+    } catch (error) {
+      Logger.error("Error parsing user-info from localStorage", error);
+      setIsAuthenticated(false);
     }
   }, [location, navigate, setIsAuthenticated]);
 
   return null;
 }
 
-export default RefrshHandler;
+export default RefreshHandler;

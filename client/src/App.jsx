@@ -6,22 +6,22 @@ import Dashboard from "./pages/Dashboard";
 import { useState } from "react";
 import RefrshHandler from "./components/RefreshHandler";
 import NotFound from "./pages/NotFound";
-import { AppBar } from "@mui/material";
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const GoogleWrapper = () => (
     <GoogleOAuthProvider clientId="88805531313-qi6ucpfi9ha4acucih0kt4e78miu0ine.apps.googleusercontent.com">
       <GoogleLogin></GoogleLogin>
     </GoogleOAuthProvider>
   );
+
   const PrivateRoute = ({ element }) => {
     return isAuthenticated ? element : <Navigate to="/login" />;
   };
+
   return (
     <BrowserRouter>
       <RefrshHandler setIsAuthenticated={setIsAuthenticated} />
-
       <Routes>
         <Route path="/login" element={<GoogleWrapper />} />
         <Route path="/" element={<Navigate to="/login" />} />
