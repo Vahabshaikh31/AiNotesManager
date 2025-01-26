@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { googleAuth } from "../api/apiService"; // Ensure this matches the correct API endpoint
+import { googleAuth } from "../api/apiService";
 import { useNavigate } from "react-router-dom";
 import Logger from "../utils/logger";
 
@@ -14,7 +14,6 @@ const GoogleLogin = () => {
         setLoading(true); // Start loading
         const result = await googleAuth(authResult.code);
         console.log(result.data);
-
         const token = result.data.token;
         Logger.info("Google Login successful...", token);
         localStorage.setItem("user-info", JSON.stringify(token));
@@ -37,11 +36,9 @@ const GoogleLogin = () => {
   });
 
   return (
-    <div className="App">
-      <button onClick={googleLogin} disabled={loading}>
-        {loading ? "Signing in..." : "Sign in with Google"}
-      </button>
-    </div>
+    <button onClick={googleLogin} disabled={loading}>
+      {loading ? "Signing in..." : "Sign in with Google"}
+    </button>
   );
 };
 

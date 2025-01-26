@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { oauth2Client } from "../utils/googleClient.js";
 import User from "../models/userModel.js";
 import { logger } from "../utils/logger.js";
+import { tokenGenerator } from "../services/tokenGenerate.js";
 
 export const googleAuth = async (req, res, next) => {
   const code = req.query.code;
@@ -39,19 +40,14 @@ export const googleAuth = async (req, res, next) => {
       logger.info("User found in database");
     }
 
-    // Step 4: Generate JWT token after registration (or login)
     const { _id } = user;
-    const token = jwt.sign({ _id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_TIMEOUT, // Token expiration
-    });
+    const token = tokenGenerator(_id);
     logger.info("JWT token generated");
 
-    // Step 5: Return the response with token and user info
     res.status(200).json({
       message: "success",
-      token, // Provide token for user authentication
-      user, // Provide user details (name, email, etc.)
-      picture,
+      token,
+      user,
     });
   } catch (err) {
     logger.error("Error during Google authentication", err); // Log the error

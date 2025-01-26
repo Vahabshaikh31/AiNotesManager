@@ -10,9 +10,8 @@ const Dashboard = () => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // To track errors
+  const [error, setError] = useState(null);
 
-  // Get the token from localStorage
   const token = JSON.parse(localStorage.getItem("user-info"));
 
   const userInfo = async () => {
@@ -32,7 +31,7 @@ const Dashboard = () => {
       Logger.error("Error fetching user info", error);
       setError("An error occurred while fetching user info");
     } finally {
-      setLoading(false); // Set loading to false after the call finishes
+      setLoading(false);
     }
   };
 

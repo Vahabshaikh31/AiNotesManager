@@ -8,16 +8,16 @@ export const verifyToken = (req, res, next) => {
       .status(403)
       .json({ success: false, message: "No token provided" });
   }
-
   const tokenWithoutBearer = token.replace("Bearer ", "");
+  try {
+    const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET);
 
-  const decoded = jwt.decode(tokenWithoutBearer);
+    req.userId = decoded._id;
 
-  if (!decoded) {
+    next();
+  } catch (error) {
     return res
       .status(401)
-      .json({ success: false, message: "Failed to decode token" });
+      .json({ success: false, message: "Invalid or expired token" });
   }
-  req.userId = decoded._id;
-  next();
 };

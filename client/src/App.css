@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+
+/* login paga */
+/* App container */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f7fc;
+}
+
+/* Login form container */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    padding: 40px;
+    background-color: #fff;
+    box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+    max-width: 90%;
+}
+
+/* Title */
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Input fields */
+.input-field {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input-field .MuiOutlinedInput-root {
+    border-radius: 8px;
+}
+
+.input-field .MuiInputLabel-root {
+    font-weight: 500;
+}
+
+/* Login buttons */
+.login-button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.login-google {
+    background-color: #db4437;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.login-google:hover {
+    background-color: #c1351d;
+}
+
+.login-github {
+    background-color: #333;
+    color: white;
+}
+
+.login-github:hover {
+    background-color: #444;
+}
+
+/* Footer / Signup link */
+.signup-footer {
+    margin-top: 15px;
+    font-size: 0.875rem;
+    color: #777;
+}
+
+.signup-footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signup-footer a:hover {
+    text-decoration: underline;
+}
+
+/* login page */

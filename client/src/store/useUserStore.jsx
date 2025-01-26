@@ -1,4 +1,3 @@
-import { Navigate } from "react-router-dom";
 import { create } from "zustand";
 
 const useUserStore = create((set) => ({
@@ -9,7 +8,6 @@ const useUserStore = create((set) => ({
   logout: () => {
     set({ userInfo: null });
     localStorage.removeItem("user-info");
-    Navigate("/login");
   },
 }));
 

@@ -10,7 +10,6 @@ connectDB();
 
 // Middlewares
 app.use(express.json());
-
 // Set the Cross-Origin-Opener-Policy header
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
@@ -24,8 +23,8 @@ app.use(
   })
 );
 
-app.use("/api/otp", otpRoutes);
 app.use("/auth", authRoutes);
+app.use("/api/otp", otpRoutes);
 app.use("/api/user", userRoutes);
 
 app.use("*", (req, res) => {

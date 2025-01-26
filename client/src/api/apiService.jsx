@@ -20,8 +20,7 @@ export const authAPI = createAPI("http://localhost:3000/auth/");
 // User API
 export const userAPI = createAPI("http://localhost:3000/api/user/");
 
+export const otpAPI = createAPI("http://localhost:3000/api/otp/");
+
 // Example of using these APIs
 export const googleAuth = (code) => authAPI.get(`/google?code=${code}`);
-export const getUserDetails = (id) => userAPI.get(`/${id}`);
-export const updateUserDetails = (id, data) => userAPI.put(`/${id}`, data);
-export const deleteUser = (id) => userAPI.delete(`/${id}`);
