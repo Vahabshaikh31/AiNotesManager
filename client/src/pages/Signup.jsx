@@ -4,7 +4,7 @@ import OtpLogin from "../components/OtpLogin";
 import GoogleLogin from "../components/GoogleLogin";
 import { useNavigate } from "react-router-dom";
 
-const LoginPage = () => {
+const Signup = () => {
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
@@ -16,7 +16,7 @@ const LoginPage = () => {
       document.body.classList.remove("dark-mode");
     }
   }, []);
-  const handlereg = () => navigate("/signup");
+  const handlereg = () => navigate("/login");
 
   return (
     <div className="login-container">
@@ -26,7 +26,7 @@ const LoginPage = () => {
         <GoogleLogin />
         <div className="signup-footer">
           <Typography variant="body2">
-            <button onClick={handlereg}>Don't have an account? Sign Up</button>
+            <button onClick={handlereg}> have an account? Login</button>
           </Typography>
         </div>
       </div>
@@ -34,4 +34,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Signup;

@@ -164,7 +164,7 @@ export default function MagicLinkAlertSignInPage() {
         </div>
       )}
 
-      {location.pathname !== "/signup" && (
+      {location.pathname === "/signup" && (
         <>
           {step === 1 && (
             <div className="bg-white p-6 rounded-lg shadow-md">

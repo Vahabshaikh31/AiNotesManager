@@ -8,6 +8,7 @@ const GoogleLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   Logger.info(`Login page loaded...`);
+
   const responseGoogle = async (authResult) => {
     try {
       if (authResult["code"]) {
@@ -36,9 +37,18 @@ const GoogleLogin = () => {
   });
 
   return (
-    <button onClick={googleLogin} disabled={loading}>
-      {loading ? "Signing in..." : "Sign in with Google"}
-    </button>
+    <div className="flex justify-center items-center mt-10">
+      <button
+        onClick={googleLogin}
+        disabled={loading}
+        className={`w-full sm:w-auto py-2 px-4 rounded-lg border border-gray-300 shadow-md 
+          ${loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"} 
+          text-white font-semibold transition duration-200 ease-in-out 
+          disabled:cursor-not-allowed disabled:bg-gray-300`}
+      >
+        {loading ? "Signing in..." : "Sign in with Google"}
+      </button>
+    </div>
   );
 };
 
