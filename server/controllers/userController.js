@@ -1,4 +1,4 @@
-import User from "../models/userModel.js";
+import { User } from "../models/ChatSchema.js";
 
 export const userInfo = async (req, res) => {
   try {

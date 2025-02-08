@@ -10,7 +10,7 @@ import useThemeStore from "./store/useThemeStore"; // Correctly import the Zusta
 import LoginPage from "./pages/Login";
 import Signup from "./pages/Signup";
 import Conversation from "./components/Conversation";
-
+import DownloadPdf from "./pages/DownloadPDF";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const { darkMode } = useThemeStore(); // Access the darkMode state from Zustand
@@ -38,9 +38,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Conversation />
+      {/* <Conversation /> */}
+      {/* <DownloadPdf /> */}
       {/* <RefrshHandler setIsAuthenticated={setIsAuthenticated} /> */}
-      {/* <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <Routes>
           <Route path="/login" element={<GoogleWrapper />} />
           <Route path="/signup" element={<GoogleWrapperReg />} />
@@ -51,7 +52,7 @@ function App() {
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </ThemeProvider> */}
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

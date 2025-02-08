@@ -27,7 +27,19 @@ const mainLabelSchema = new mongoose.Schema(
 const userSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    picture: { type: String },
+    otp: { type: String },
+    password: { type: String, required: true },
+    expiryTime: { type: Date },
     mainLabelIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "MainLabel" }],
+    subscriptionPlan: {
+      type: String,
+      enum: ["free", "basic", "premium"],
+      default: "free",
+    },
+    subscriptionExpiry: { type: Date },
+    isSubscribed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -2,7 +2,7 @@ import { sendMail } from "../services/emailService.js";
 import { generateOtp } from "../utils/otpUtils.js";
 import { generateOtpEmailMessage } from "../utils/otpEmailTemplate.js";
 import { logger } from "../utils/logger.js";
-import User from "../models/userModel.js";
+import { User } from "../models/ChatSchema.js";
 import bcrypt from "bcryptjs";
 import { tokenGenerator } from "../services/tokenGenerate.js";
 
