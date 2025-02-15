@@ -8,17 +8,27 @@ const chatSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const subSubLabelSchema = new mongoose.Schema(
+  {
+    subSubLabelName: { type: String, unique: true },
+    messageIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
+  },
+  { timestamps: true }
+);
+
 const subLabelSchema = new mongoose.Schema(
   {
-    subLabelId: { type: String, required: true, unique: true },
-    messageIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
+    subLabelName: { type: String, unique: true },
+    subSubLabelIds: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "SubSubLabel" },
+    ],
   },
   { timestamps: true }
 );
 
 const mainLabelSchema = new mongoose.Schema(
   {
-    mainLabelId: { type: String, required: true, unique: true },
+    mainLabelName: { type: String, unique: true }, // Changed from mainLabelId
     subLabelIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "SubLabel" }],
   },
   { timestamps: true }
@@ -26,13 +36,13 @@ const mainLabelSchema = new mongoose.Schema(
 
 const userSchema = new mongoose.Schema(
   {
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    username: { type: String, unique: true },
+    email: { type: String, unique: true },
     picture: { type: String },
     otp: { type: String },
-    password: { type: String, required: true },
+    password: { type: String },
     expiryTime: { type: Date },
-    mainLabelIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "MainLabel" }],
+    mainLabels: [{ type: mongoose.Schema.Types.ObjectId, ref: "MainLabel" }], // Updated field
     subscriptionPlan: {
       type: String,
       enum: ["free", "basic", "premium"],
@@ -45,6 +55,7 @@ const userSchema = new mongoose.Schema(
 );
 
 export const Chat = mongoose.model("Chat", chatSchema);
+export const SubSubLabel = mongoose.model("SubSubLabel", subSubLabelSchema);
 export const SubLabel = mongoose.model("SubLabel", subLabelSchema);
 export const MainLabel = mongoose.model("MainLabel", mainLabelSchema);
 export const User = mongoose.model("User", userSchema);

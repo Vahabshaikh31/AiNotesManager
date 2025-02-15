@@ -28,7 +28,7 @@ export const verifyOtp = async (req, res) => {
     await Otp.deleteOne({ email });
     res.status(200).send({ message: "OTP verified successfully!" });
   } catch (error) {
-    console.error("Error verifying OTP:", error);
+    console.log("Error verifying OTP:", error);
     res.status(500).send("Error verifying OTP.");
   }
 };

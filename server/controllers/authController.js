@@ -6,7 +6,7 @@ import { User } from "../models/ChatSchema.js";
 
 export const googleAuth = async (req, res, next) => {
   const code = req.query.code;
-
+  const generateUsername = (email) => email?.split("@")[0]; // Extract part before '@'
   try {
     logger.info("Received Google authentication request");
 
@@ -22,15 +22,15 @@ export const googleAuth = async (req, res, next) => {
     );
     logger.info("User info received from Google");
 
-    const { email, name, picture } = userRes.data;
+    const { email, picture } = userRes.data;
 
     // Step 3: Check if the user already exists in the database
     let user = await User.findOne({ email });
-
+    const username = generateUsername(email);
     if (!user) {
       // User doesn't exist, create a new user
       user = await User.create({
-        name,
+        username,
         email,
         picture,
       });
@@ -40,7 +40,7 @@ export const googleAuth = async (req, res, next) => {
     }
 
     const { _id } = user;
-    const token = tokenGenerator(_id);
+    const token = tokenGenerator(_id, username);
     logger.info("JWT token generated");
 
     res.status(200).json({

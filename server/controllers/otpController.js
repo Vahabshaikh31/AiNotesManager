@@ -5,6 +5,7 @@ import { logger } from "../utils/logger.js";
 import { User } from "../models/ChatSchema.js";
 import bcrypt from "bcryptjs";
 import { tokenGenerator } from "../services/tokenGenerate.js";
+import { generateUsername } from "../services/generateUsername.js";
 
 export const sendOtp = async (req, res) => {
   const { email } = req.body;
@@ -16,7 +17,7 @@ export const sendOtp = async (req, res) => {
 
   try {
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    if (existingUser && existingUser.password) {
       logger.info(`User already exists: ${email}`);
       return res.status(200).json({ message: "User already exists", email });
     }
@@ -73,9 +74,9 @@ export const verifyOtp = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-  const { email, name, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!email || !name || !password) {
+  if (!email || !password) {
     logger.warn("Email, name, or password is missing during registration.");
     return res
       .status(400)
@@ -91,10 +92,15 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10); // Async hashing
-    const user = await User.create({ email, name, password: hashedPassword });
+    const username = generateUsername(email);
+    const user = await User.create({
+      email,
+      username,
+      password: hashedPassword,
+    });
 
     const { _id } = user;
-    const token = tokenGenerator(_id);
+    const token = tokenGenerator(_id, username);
 
     logger.info(`User registered successfully: ${email}`);
     res.status(201).json({ message: "User registered successfully", token });

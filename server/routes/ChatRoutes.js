@@ -1,17 +1,39 @@
 import express from "express";
 import {
-  CreatMainLabel,
-  CreatSubLabel,
-  FetchHistory,
-  fetchMainAndSubLebal,
+  CreateMainLabel,
+  CreateSubLabel,
+  CreateSubSubLabel,
+  fetchMainLabelsOnly,
+  fetchSubLabelsOnly,
+  fetchSubSubLabelsOnly,
+  fetchLabelsHierarchy,
+  fetchChatsForSubSubLabel,
   sendMessage,
-} from "../controllers/ChatSchema.js";
+} from "../controllers/ChatControlers.js";
+
 const Router = express.Router();
 
-Router.post("/main-labels", CreatMainLabel);
-Router.post("/sub-labels", CreatSubLabel);
-Router.get("/main-labels/:userId", fetchMainAndSubLebal);
-Router.get("/:subLabelId", FetchHistory);
-Router.post("/chats", sendMessage);
+// =========================
+// Routes for Creating Labels
+// =========================
+Router.post("/main-label", CreateMainLabel);
+Router.post("/sub-label", CreateSubLabel);
+Router.post("/sub-sub-label", CreateSubSubLabel);
+
+// =========================
+// Routes for Fetching Labels
+// =========================
+Router.get("/main-labels/:username", fetchMainLabelsOnly); // Fetch only main labels
+Router.get("/sub-labels/:mainLabelName", fetchSubLabelsOnly); // Fetch only sub-labels under a main label
+Router.get("/sub-sub-labels/:subLabelName", fetchSubSubLabelsOnly); // Fetch only sub-sub labels under a sub-label
+
+// Fetch full hierarchy for a user
+Router.get("/user/:username", fetchLabelsHierarchy);
+
+// =========================
+// Routes for Chat Handling
+// =========================
+Router.get("/chats/:subSubLabelName", fetchChatsForSubSubLabel); // Fetch chat history
+Router.post("/chats", sendMessage); // Send a message
 
 export default Router;
