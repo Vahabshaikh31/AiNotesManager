@@ -10,7 +10,7 @@ const chatSchema = new mongoose.Schema(
 
 const subSubLabelSchema = new mongoose.Schema(
   {
-    subSubLabelName: { type: String, unique: true },
+    subSubLabelName: { type: String },
     messageIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
   },
   { timestamps: true }
@@ -18,7 +18,7 @@ const subSubLabelSchema = new mongoose.Schema(
 
 const subLabelSchema = new mongoose.Schema(
   {
-    subLabelName: { type: String, unique: true },
+    subLabelName: { type: String },
     subSubLabelIds: [
       { type: mongoose.Schema.Types.ObjectId, ref: "SubSubLabel" },
     ],
@@ -28,7 +28,7 @@ const subLabelSchema = new mongoose.Schema(
 
 const mainLabelSchema = new mongoose.Schema(
   {
-    mainLabelName: { type: String, unique: true }, // Changed from mainLabelId
+    mainLabelName: { type: String }, // Changed from mainLabelId
     subLabelIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "SubLabel" }],
   },
   { timestamps: true }

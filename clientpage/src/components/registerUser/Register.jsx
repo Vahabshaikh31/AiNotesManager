@@ -1,31 +1,47 @@
 "use client";
 
-import OTPVerification from "@/components/registerUser/otpInput";
 import Link from "next/link";
-import { useState } from "react";
-import { FcGoogle } from "react-icons/fc"; // Google icon
+import { useEffect, useState } from "react";
+import GoogleLogin from "../googleLogin/GoogleLogin";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { otpApi } from "@/utils/api";
 
-export default function Register({ setstep }) {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+export default function Register({ handleChildData, setStep }) {
+  const [email, setEmail] = useState("");
+  const { user } = useAuth();
+  const router = useRouter();
 
-  // Handle form input change
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // Redirect logged-in users to the dashboard
+  useEffect(() => {
+    if (user) {
+      router.replace("/dashboard");
+    }
+  }, [user, router]);
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
-    alert(`Logged in with ${formData.email}`);
-    setstep(2);
+
+    try {
+      const response = await otpApi.post("/send", { email });
+
+      if (response?.data?.message === "User already exists") {
+        alert(response.data.message);
+        router.push("/login");
+        return;
+      }
+
+      // Call handleChildData only if the user does not exist
+      handleChildData({ email });
+      setStep(2);
+    } catch (err) {
+      console.log("Error while sending OTP:", err.message);
+      alert("Failed to send OTP. Please try again.");
+    }
   };
 
-  // Handle Google Login
-  const handleGoogleLogin = () => {
-    console.log("Google Login Clicked");
-    alert("Google Login Clicked!");
-  };
+  // Prevent rendering if user is already authenticated
+  if (user) return null;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-lightBg dark:bg-darkBg transition-colors duration-300">
@@ -47,16 +63,15 @@ export default function Register({ setstep }) {
               id="email"
               name="email"
               type="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 mt-2 border rounded-lg bg-lightInputBg dark:bg-darkInputBg text-lightText dark:text-darkText border-lightInputBorder dark:border-darkInputBorder focus:outline-none focus:ring-2 focus:ring-lightInputFocus dark:focus:ring-darkInputFocus"
               placeholder="Enter your email"
               required
             />
           </div>
-          {/* <OTPVerification /> */}
 
-          {/* Login Button */}
+          {/* Continue Button */}
           <button
             type="submit"
             className="w-full py-2 mt-4 bg-lightPrimary hover:bg-lightSecondary dark:bg-darkPrimary dark:hover:bg-darkSecondary text-white rounded-lg transition"
@@ -65,18 +80,12 @@ export default function Register({ setstep }) {
           </button>
         </form>
 
-        {/* Google Login Button */}
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 py-2 mt-4 bg-lightInputBg dark:bg-darkInputBg border border-lightInputBorder dark:border-darkInputBorder rounded-lg text-lightText dark:text-darkText hover:bg-lightCard dark:hover:bg-darkCard transition"
-        >
-          <FcGoogle className="text-2xl" />
-          Continue with Google
-        </button>
+        {/* Google Login */}
+        <GoogleLogin />
 
-        {/* Signup Link */}
+        {/* Login Link */}
         <p className="mt-4 text-center text-lightText dark:text-darkText">
-          Already have an account?
+          Already have an account?{" "}
           <Link
             href="/login"
             className="text-lightPrimary dark:text-darkPrimary hover:underline"

@@ -6,9 +6,12 @@ import {
   SubSubLabel,
 } from "../models/ChatSchema.js";
 import { logger } from "../utils/logger.js";
+import NodeCache from "node-cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const cache = new NodeCache({ stdTTL: 3600, checkperiod: 60 });
 
 export const AiResponse = async (prompt) => {
   try {
@@ -35,6 +38,7 @@ export const CreateMainLabel = async (req, res) => {
 
   try {
     let user = await User.findOne({ username });
+
     if (!user) {
       user = new User({ username, mainLabels: [] });
       await user.save();
@@ -42,9 +46,12 @@ export const CreateMainLabel = async (req, res) => {
 
     let mainLabel = new MainLabel({ mainLabelName, subLabelIds: [] });
     await mainLabel.save();
-    user.mainLabels.push(mainLabel.mainLabelName);
+
+    // Store the ObjectId of the new main label instead of its name
+    user.mainLabels.push(mainLabel._id);
     await user.save();
 
+    cache.del(`mainLabels_${username}`); // Invalidate cache for main labels
     res.json({ success: true, mainLabel });
   } catch (error) {
     logger.error("Error creating main label:", error);
@@ -66,9 +73,10 @@ export const CreateSubLabel = async (req, res) => {
 
     let subLabel = new SubLabel({ subLabelName, subSubLabelIds: [] });
     await subLabel.save();
-    mainLabel.subLabelIds.push(subLabel.subLabelName);
-    await mainLabel.save();
 
+    mainLabel.subLabelIds.push(subLabel._id);
+    await mainLabel.save();
+    cache.del(`SubLabels_${mainLabelName}`);
     res.json({ success: true, subLabel });
   } catch (error) {
     logger.error("Error creating sub label:", error);
@@ -89,8 +97,10 @@ export const CreateSubSubLabel = async (req, res) => {
     const subSubLabel = new SubSubLabel({ subSubLabelName, messageIds: [] });
     await subSubLabel.save();
 
-    subLabel.subSubLabelIds.push(subSubLabel.subSubLabelName);
+    subLabel.subSubLabelIds.push(subSubLabel._id);
     await subLabel.save();
+
+    cache.del(`SubSubLabels_${subLabelName}`);
 
     res.json({ success: true, subLabel });
   } catch (error) {
@@ -111,6 +121,13 @@ export const CreateSubSubLabel = async (req, res) => {
 // ==============================
 export const fetchMainLabelsOnly = async (req, res) => {
   try {
+    const cacheKey = `mainLabels_${req.params.username}`;
+
+    if (cache.has(cacheKey)) {
+      logger.info("Returning cached main labels");
+      return res.json(cache.get(cacheKey));
+    }
+
     logger.info(`Fetching only main labels for user: ${req.params.username}`);
     const user = await User.findOne({ username: req.params.username }).populate(
       "mainLabels"
@@ -124,6 +141,7 @@ export const fetchMainLabelsOnly = async (req, res) => {
     const mainLabels = user.mainLabels.map((label) => ({
       mainLabelName: label.mainLabelName,
     }));
+    cache.set(cacheKey, mainLabels);
 
     res.json(mainLabels);
   } catch (error) {
@@ -138,6 +156,13 @@ export const fetchMainLabelsOnly = async (req, res) => {
 export const fetchSubLabelsOnly = async (req, res) => {
   try {
     const { mainLabelName } = req.params;
+    const cacheKey = `SubLabels_${mainLabelName}`;
+
+    if (cache.has(cacheKey)) {
+      logger.info("Returning cached main labels");
+      return res.json(cache.get(cacheKey));
+    }
+
     logger.info(`Fetching sub labels for main label: ${mainLabelName}`);
 
     const mainLabel = await MainLabel.findOne({ mainLabelName }).populate(
@@ -152,6 +177,7 @@ export const fetchSubLabelsOnly = async (req, res) => {
     const subLabels = mainLabel.subLabelIds.map((subLabel) => ({
       subLabelName: subLabel.subLabelName,
     }));
+    cache.set(cacheKey, subLabels);
 
     res.json(subLabels);
   } catch (error) {
@@ -166,6 +192,12 @@ export const fetchSubLabelsOnly = async (req, res) => {
 export const fetchSubSubLabelsOnly = async (req, res) => {
   try {
     const { subLabelName } = req.params;
+    const cacheKey = `SubSubLabels_${subLabelName}`;
+
+    if (cache.has(cacheKey)) {
+      logger.info("Returning cached main labels");
+      return res.json(cache.get(cacheKey));
+    }
     logger.info(`Fetching sub-sub labels for sub label: ${subLabelName}`);
 
     const subLabel = await SubLabel.findOne({ subLabelName }).populate(
@@ -180,6 +212,7 @@ export const fetchSubSubLabelsOnly = async (req, res) => {
     const subSubLabels = subLabel.subSubLabelIds.map((subSubLabel) => ({
       subSubLabelName: subSubLabel.subSubLabelName,
     }));
+    cache.set(cacheKey, subSubLabels);
 
     res.json(subSubLabels);
   } catch (error) {
@@ -194,6 +227,12 @@ export const fetchSubSubLabelsOnly = async (req, res) => {
 export const fetchChatsForSubSubLabel = async (req, res) => {
   try {
     const { subSubLabelName } = req.params;
+    const cacheKey = `Chats_${subSubLabelName}`;
+
+    if (cache.has(cacheKey)) {
+      logger.info("Returning cached main labels");
+      return res.json(cache.get(cacheKey));
+    }
     logger.info(`Fetching chats for sub-sub label: ${subSubLabelName}`);
 
     const subSubLabel = await SubSubLabel.findOne({ subSubLabelName }).populate(
@@ -210,6 +249,7 @@ export const fetchChatsForSubSubLabel = async (req, res) => {
       message: chat.message,
       timestamp: chat.createdAt,
     }));
+    cache.set(cacheKey, chats);
 
     res.json(chats);
   } catch (error) {
@@ -243,8 +283,9 @@ export const sendMessage = async (req, res) => {
     const botMessage = new Chat({ sender: "bot", message: botReply });
     await botMessage.save();
     subSubLabel.messageIds.push(botMessage._id);
-
     await subSubLabel.save();
+
+    cache.del(`Chats_${subSubLabelName}`);
     res.json({ userMessage, botMessage });
   } catch (error) {
     logger.error("Error sending message:", error);

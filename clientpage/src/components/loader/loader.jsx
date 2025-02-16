@@ -8,7 +8,7 @@ const Loader = () => {
   if (!loading) return null; // ✅ Hide when not loading
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className=" flex items-center justify-center  z-50">
       <div className="spinner center">
         <div className="spinner-blade"></div>
         <div className="spinner-blade"></div>

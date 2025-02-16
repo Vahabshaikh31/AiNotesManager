@@ -1,12 +1,14 @@
-import Sidebar from "@/components/sidebar/sidebar";
-import React from "react";
+import Dashboard from "@/components/dashboardPage/Dashbaord";
+import seoConfig from "@/config/seoConfig";
+import { Logger } from "@/utils/Logger";
+import { Metadata } from "next";
 
-const page = () => {
-  return (
-    <div>
-      <Sidebar />
-    </div>
-  );
+export const metadata = seoConfig.home;
+
+const Page = () => {
+  Logger.info("Dashboard Component Rendered");
+
+  return <Dashboard />;
 };
 
-export default page;
+export default Page;

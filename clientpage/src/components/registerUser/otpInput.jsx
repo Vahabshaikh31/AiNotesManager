@@ -1,10 +1,12 @@
 "use client";
 
+import { otpApi } from "@/utils/api";
 import { useState, useRef, useEffect } from "react";
 
-export default function OTPVerification({ setstep }) {
+export default function OTPVerification({ email, setStep }) {
   const inputRefs = useRef([]);
   const [otp, setOtp] = useState(["", "", "", ""]);
+  console.log(email);
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -12,47 +14,64 @@ export default function OTPVerification({ setstep }) {
 
   const handleChange = (index, e) => {
     const value = e.target.value;
-    if (!/^[0-9]*$/.test(value)) return;
+    if (!/^\d$/.test(value)) return; // Allow only single digit (0-9)
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (value && index < 3) {
-      inputRefs.current[index + 1]?.focus();
+    if (index < 3) {
+      inputRefs.current[index + 1]?.focus(); // Move to next input
     }
   };
 
   const handleKeyDown = (index, e) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+    if (e.key === "Backspace") {
+      const newOtp = [...otp];
+      if (otp[index]) {
+        newOtp[index] = ""; // Clear the current input
+      } else if (index > 0) {
+        newOtp[index - 1] = ""; // Clear previous input if current is empty
+        inputRefs.current[index - 1]?.focus();
+      }
+      setOtp(newOtp);
     }
   };
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const text = e.clipboardData.getData("text").slice(0, 4);
-    if (!/^[0-9]{4}$/.test(text)) return;
+    const text = e.clipboardData.getData("text").trim().slice(0, 4);
+    if (!/^\d{4}$/.test(text)) return;
 
     setOtp(text.split(""));
     inputRefs.current[3]?.focus();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Entered OTP: ${otp.join("")}`);
-    setstep(3);
+    try {
+      const enteredOtp = otp.join(""); // Use correct OTP variable
+      console.log(enteredOtp, email);
+
+      const response = await otpApi.post("/verify", { email, otp: enteredOtp });
+
+      if (response) {
+        setStep(3);
+      }
+    } catch (error) {
+      console.log("OTP verification failed:", error);
+    }
   };
 
   return (
-    <div className="max-w-md  max-h-[100vh] mx-auto text-center bg-white dark:bg-darkCard px-4 sm:px-8 py-10 rounded-xl shadow">
+    <div className="max-w-md max-h-[100vh] mx-auto text-center bg-white dark:bg-darkCard px-4 sm:px-8 py-10 rounded-xl shadow">
       <header className="mb-8">
         <h1 className="text-2xl font-bold mb-1">Mobile Phone Verification</h1>
         <p className="text-[15px] text-slate-500">
-          Enter the 4-digit verification code that was sent to your phone
-          number.
+          Enter the 4-digit verification code sent to your phone number.
         </p>
       </header>
+
       <form onSubmit={handleSubmit}>
         <div className="flex items-center justify-center gap-3">
           {otp.map((digit, index) => (
@@ -69,6 +88,7 @@ export default function OTPVerification({ setstep }) {
             />
           ))}
         </div>
+
         <div className="max-w-[260px] mx-auto mt-4">
           <button
             type="submit"
@@ -78,6 +98,7 @@ export default function OTPVerification({ setstep }) {
           </button>
         </div>
       </form>
+
       <div className="text-sm text-slate-500 mt-4">
         Didn't receive code?{" "}
         <a

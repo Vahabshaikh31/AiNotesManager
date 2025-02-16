@@ -20,8 +20,6 @@ export default {
         darkPrimary: "var(--dark-primary)",
         lightSecondary: "var(--light-secondary)",
         darkSecondary: "var(--dark-secondary)",
-        lightBorder: "var(--light-border)",
-        darkBorder: "var(--dark-border)",
         lightInputBg: "var(--light-input-bg)",
         darkInputBg: "var(--dark-input-bg)",
         lightInputBorder: "var(--light-input-border)",
@@ -30,6 +28,12 @@ export default {
         darkInputFocus: "var(--dark-input-focus)",
         lightShadow: "var(--light-shadow)",
         darkShadow: "var(--dark-shadow)",
+        lightBorder: "var(--light-border)",
+        darkBorder: "var(--dark-border)",
+      },
+      backgroundImage: {
+        "dark-primary": "linear-gradient(to right, #ec4899, #a855f7)",
+        "light-primary": "linear-gradient(to right,#ec4899, #a855f7)", // Example light mode gradient
       },
     },
   },
